@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // Make sure you installed the .NET 8 SDK in Jenkins and added it as a tool
-        // Otherwise, you can just call 'dotnet' directly if it's on PATH
-        //dotnet 'dotnet8'
-    }
-
   environment {
         DOTNET_HOME = "/Downloads/Software/Dotnet8"  // update this path if dotnet is installed elsewhere
         PATH = "${DOTNET_HOME}:${env.PATH}"
@@ -34,7 +28,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                //sh 'dotnet test --configuration Release --no-build --verbosity normal'
+                sh 'dotnet test --configuration Release --no-build --verbosity normal'
             }
         }
 
