@@ -4,7 +4,7 @@ pipeline {
     tools {
         // Make sure you installed the .NET 8 SDK in Jenkins and added it as a tool
         // Otherwise, you can just call 'dotnet' directly if it's on PATH
-        dotnet 'dotnet8'
+        //dotnet 'dotnet8'
     }
 
   environment {
