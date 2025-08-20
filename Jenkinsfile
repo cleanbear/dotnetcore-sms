@@ -7,9 +7,9 @@ pipeline {
         dotnet 'dotnet8'
     }
 
-    environment {
-        DOTNET_CLI_TELEMETRY_OPTOUT = "1"
-        DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "true"
+  environment {
+        DOTNET_HOME = "/Downloads/Software/Dotnet8"  // update this path if dotnet is installed elsewhere
+        PATH = "${DOTNET_HOME}:${env.PATH}"
     }
 
     stages {
