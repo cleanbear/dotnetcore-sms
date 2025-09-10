@@ -14,10 +14,8 @@ pipeline {
     }
     stage('Build Docker image') {
       steps {
-        sh '''
-          whoami
-          docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .
-         '''
+        sh 'docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .'
+
       }
     }
     stage('Push to ACR') {
