@@ -19,7 +19,7 @@ spec:
           image: donetdemo.azurecr.io/myapp:latest   # ACR image
           ports:
             - containerPort: 80
-       imagePullSecrets:
+      imagePullSecrets:
           - name: acr-secret
 ---
 apiVersion: v1
