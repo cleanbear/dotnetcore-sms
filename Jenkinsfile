@@ -1,87 +1,44 @@
 pipeline {
     agent any
-
+    
   environment {
-        DOTNET_HOME = "/Downloads/Software/Dotnet8"  // update this path if dotnet is installed elsewhere
-        PATH = "${DOTNET_HOME}:${env.PATH}"
+    ACR_NAME = 'donetdemo'           // change to your unique ACR name (lowercase)
+    IMAGE_NAME = "${env.ACR_NAME}.azurecr.io/myapp"
+  }
+  stages {
+    stage('Checkout') {
+      steps { checkout scm }
     }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                // Pull from GitHub (Jenkins will use the repo configured in the job)
-                checkout scm
-            }
+    stage('Azure Login') {
+      steps {
+        withCredentials([string(credentialsId: 'AZ_SP_APPID', variable: 'AZ_APP_ID'),
+                         string(credentialsId: 'AZ_SP_PASSWORD', variable: 'AZ_PASSWORD'),
+                         string(credentialsId: 'AZ_SP_TENANT', variable: 'AZ_TENANT')]) {
+          sh '''
+            az login --service-principal --username "$AZ_APP_ID" --password "$AZ_PASSWORD" --tenant "$AZ_TENANT"
+          '''
         }
-
-        stage('Restore') {
-            steps {
-                sh 'dotnet restore'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'dotnet build --configuration Release --no-restore'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'dotnet test --configuration Release --no-build --verbosity normal'
-            }
-        }
-
-        stage('Publish') {
-            steps {
-                sh 'dotnet publish -c Release -o ./publish'
-            }
-        }
-        stage('Stop IIS') {
-            steps {
-                sshPublisher(publishers: [
-                    sshPublisherDesc(
-                        configName: 'windows-vm',   // Your SSH config name in Jenkins
-                        transfers: [
-                            sshTransfer(
-                                execCommand: 'iisreset /stop'
-                            )
-                        ],
-                        usePromotionTimestamp: false,
-                        verbose: true
-                    )
-                ])
-            }
-        }
-        stage('Deploy via SSH') {
-            steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'windows-vm', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/websites/myfirstapp/', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '**/*')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-            }
-        }
-
-        stage('Start IIS') {
-            steps {
-                sshPublisher(publishers: [
-                    sshPublisherDesc(
-                        configName: 'windows-vm',
-                        transfers: [
-                            sshTransfer(
-                                execCommand: 'iisreset /start'
-                            )
-                        ],
-                        usePromotionTimestamp: false,
-                        verbose: true
-                    )
-                ])
-            }
-        }    
-   }      
-    post {
-        success {
-            archiveArtifacts artifacts: 'publish/**', fingerprint: true
-        }
-        failure {
-            echo 'Build failed!'
-        }
+      }
     }
+    stage('Build Docker image') {
+      steps {
+        sh 'docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .'
+      }
+    }
+    stage('Push to ACR') {
+      steps {
+        // az acr login will get docker credentials for the ACR (requires az logged in)
+        sh '''
+          az acr login --name ${ACR_NAME}
+          docker push ${IMAGE_NAME}:${BUILD_NUMBER}
+        '''
+      }
+    }
+    stage('Optional: Apply k8s (CD)') {
+      steps {
+        // If you want Jenkins to deploy to AKS: have kubeconfig on agent or use az aks get-credentials
+        // Example: sh 'kubectl apply -f k8s/deployment.yaml'
+      }
+    }
+  }
 }
