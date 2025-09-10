@@ -12,16 +12,12 @@ pipeline {
     stage('Checkout') {
       steps { checkout scm }
     }
-    stage('Build Docker image') {
-      steps {
-        sh 'docker build -t ${IMAGE_NAME} .'
-
-      }
-    }
+    
     stage('Push to ACR') {
       steps {
         // az acr login will get docker credentials for the ACR (requires az logged in)
         sh '''
+          docker build -t ${IMAGE_NAME} .
           docker login <ACR_LOGIN_SERVER> -u <USERNAME> -p <PASSWORD>
           docker push ${IMAGE_NAME}:${BUILD_NUMBER}
         '''
