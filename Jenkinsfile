@@ -14,7 +14,7 @@ pipeline {
         withCredentials([string(credentialsId: 'AZ_SP_APPID', variable: 'AZ_APP_ID'),
                          string(credentialsId: 'AZ_SP_PASSWORD', variable: 'AZ_PASSWORD'),
                          string(credentialsId: 'AZ_SP_TENANT', variable: 'AZ_TENANT')
-                        string (credentialsId: 'AZ_SP_SUBSCRIPTION', variable: 'AZ_SUBSCRIPTION')]) {
+                         string (credentialsId: 'AZ_SP_SUBSCRIPTION', variable: 'AZ_SUBSCRIPTION')]) {
           sh '''
             az login --service-principal --username "$AZ_APP_ID" --password "$AZ_PASSWORD" --tenant "$AZ_TENANT" --subcription "$AZ_SUBSCRIPTION"
           '''
