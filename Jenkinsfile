@@ -28,5 +28,15 @@ pipeline {
                 """
       }
     }
+    stage('Deploy to AKS') {
+    steps {
+        withKubeConfig([credentialsId: 'aks-kubeconfig']) {
+            sh """
+                kubectl apply -f deployment.yaml
+                kubectl rollout status deployment/myapp-deployment
+            """
+        }
+      }
+    }
   }
 }
