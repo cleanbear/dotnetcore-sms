@@ -3,7 +3,7 @@ pipeline {
     
   environment {
     ACR_NAME = 'donetdemo'       // change to your unique ACR name (lowercase)
-    ACR_LOGIN_SERVER = donetdemo.azurecr.io
+    ACR_LOGIN_SERVER = 'donetdemo.azurecr.io'
     USERNAME = credentials('USERNAME') 
     PASSWORD = credentials('PASSWORD') 
     IMAGE_NAME = "${env.ACR_NAME}.azurecr.io/myapp" 
