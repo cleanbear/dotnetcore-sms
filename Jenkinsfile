@@ -17,7 +17,7 @@ pipeline {
       steps {
         // az acr login will get docker credentials for the ACR (requires az logged in)
         sh '''
-          docker build -t ${IMAGE_NAME} .
+          docker build -t ${IMAGE_NAME}:${BUILD_NUMBER}.
           docker login <ACR_LOGIN_SERVER> -u <USERNAME> -p <PASSWORD>
           docker push ${IMAGE_NAME}:${BUILD_NUMBER}
         '''
