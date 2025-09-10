@@ -3,7 +3,7 @@ pipeline {
     
   environment {
     ACR_NAME = 'donetdemo'       // change to your unique ACR name (lowercase)
-    ACR_LOGIN_SERVER = credentials('ACR_LOGIN_SERVER') 
+    ACR_LOGIN_SERVER = donetdemo.azurecr.io
     USERNAME = credentials('USERNAME') 
     PASSWORD = credentials('PASSWORD') 
     IMAGE_NAME = "${env.ACR_NAME}.azurecr.io/myapp" 
@@ -14,16 +14,18 @@ pipeline {
     }
     stage('Build Docker Image') {
       steps {
-        sh 'docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .'
+        sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} ."
       }
     }
     stage('Push to ACR') {
-      steps {
-        // az acr login will get docker credentials for the ACR (requires az logged in)
-        sh '''
-          docker login <ACR_LOGIN_SERVER> -u <USERNAME> -p <PASSWORD>
-          docker push ${IMAGE_NAME}:${BUILD_NUMBER}
-        '''
+            steps {
+                sh """
+                    echo "🔐 Logging in to ACR..."
+                    docker login ${ACR_LOGIN_SERVER} -u ${USERNAME} -p ${PASSWORD}
+                    
+                    echo "📤 Pushing image..."
+                    docker push ${IMAGE_NAME}:${BUILD_NUMBER}
+                """
       }
     }
   }
