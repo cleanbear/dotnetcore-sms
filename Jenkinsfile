@@ -34,11 +34,5 @@ pipeline {
         '''
       }
     }
-    stage('Optional: Apply k8s (CD)') {
-      steps {
-        // If you want Jenkins to deploy to AKS: have kubeconfig on agent or use az aks get-credentials
-        // Example: sh 'kubectl apply -f k8s/deployment.yaml'
-      }
-    }
   }
 }
