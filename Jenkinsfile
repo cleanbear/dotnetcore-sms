@@ -16,7 +16,7 @@ pipeline {
       steps {
         sh '''
           whoami
-          docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} 
+          docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .
          '''
       }
     }
