@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: myapp-container
-          image: donetdemo.azurecr.io/myapp:latest   # ACR image
+          image: donetdemo.azurecr.io/myapp:55   # ACR image
           ports:
             - containerPort: 80
       imagePullSecrets:
