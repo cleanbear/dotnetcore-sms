@@ -1,7 +1,7 @@
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["webapp.csproj", "./"]
+COPY ["webapp.csproj", "./webapp"]
 RUN dotnet restore "webapp.csproj"
 COPY . .
 RUN dotnet publish "webapp.csproj" -c Release -o /app/publish
